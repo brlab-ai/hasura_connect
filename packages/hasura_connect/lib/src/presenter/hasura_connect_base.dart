@@ -422,7 +422,7 @@ class HasuraConnect {
         print('maximum connection attempt numbers reached');
         _isConnected = false;
         // ignore: unawaited_futures
-        disconnect();
+        await disconnect();
         _numbersOfConnectionAttempts = 0;
         return;
       }
