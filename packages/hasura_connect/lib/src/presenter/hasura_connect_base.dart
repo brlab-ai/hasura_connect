@@ -336,7 +336,7 @@ class HasuraConnect {
     if (snapmap.keys.isNotEmpty && !_isConnected) {
       // ignore: unawaited_futures
       _connect();
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 1000));
     } else if (_isConnected) {
       final input = querySubscription(snapshot.query);
       sendToWebSocketServer(input);
@@ -373,6 +373,7 @@ class HasuraConnect {
     ///is connected, send to the web socketw server a query subscription with
     ///the snapshot query
     if (isConnected) sendToWebSocketServer(jsonEncode(stop));
+    print(snapshot.query);
     if (isConnected) sendToWebSocketServer(querySubscription(snapshot.query));
   }
 
@@ -457,7 +458,7 @@ class HasuraConnect {
           connector
               .map<Map>((data) => jsonDecode(data))
               .listen(normalizeStreamValue);
-              
+
       (_init['payload']! as Map)['headers'] = request.headers;
       sendToWebSocketServer(jsonEncode(_init));
       // ignore: avoid_print
@@ -466,9 +467,11 @@ class HasuraConnect {
       ///Await the connector finish
       await connector.done;
 
+
+      await Future.delayed(const Duration(milliseconds: 500));
       ///Cancels the subscription stream
       await subscriptionStream.cancel();
-
+      // await Future.delayed(const Duration(milliseconds: 500));
       ///Sets the variable as false
       _isConnected = false;
 
@@ -481,6 +484,7 @@ class HasuraConnect {
       await Future.delayed(const Duration(milliseconds: 3000));
       await _connect();
     } catch (e) {
+      print('$e');
       if (_disconnectionFlag == false) {
         return;
       }
@@ -507,6 +511,7 @@ class HasuraConnect {
   ///the [data] values
   @visibleForTesting
   Future<void> normalizeStreamValue(Map data) async {
+    print('$data');
     if (data['type'] == 'data' || data['type'] == 'error') {
       controller.add(data);
     } else if (data['type'] == 'connection_ack') {
