@@ -335,7 +335,7 @@ class HasuraConnect {
     ///send it to web socker server
     if (snapmap.keys.isNotEmpty && !_isConnected) {
       // ignore: unawaited_futures
-      await _connect();
+      _connect();
       await Future.delayed(const Duration(milliseconds: 500));
     } else if (_isConnected) {
       final input = querySubscription(snapshot.query);
